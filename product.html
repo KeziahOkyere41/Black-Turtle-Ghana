@@ -648,30 +648,33 @@ document.addEventListener('DOMContentLoaded', function() {
             totalElement.textContent = '$' + total;
         }
     });
-// function addCurrencyConverter() {
-//     const exchangeRate = 13.5; // Same rate as above
+
+    document.querySelectorAll('.more-content').forEach(item => {
+        item.style.display = 'none';
+    });
     
-//     Object.keys(productPrices).forEach(productId => {
-//         const totalElement = document.getElementById(productId + 'Total');
-//         if (totalElement) {
-//             const priceUSD = productPrices[productId];
-//             const priceGHS = (priceUSD * exchangeRate).toFixed(2);
-            
-//             // Create currency display
-//             const currencyDisplay = document.createElement('div');
-//             currencyDisplay.className = 'currency-converter';
-//             currencyDisplay.innerHTML = `≈ <span>₵${priceGHS}</span> GHS each`;
-            
-//             // Insert after the price
-//             totalElement.parentNode.appendChild(currencyDisplay);
-//         }
-//     });
-// }
+    // Initialize Soursop - show only first 3 items
+    document.querySelectorAll('#soursopList li').forEach((item, index) => {
+        item.style.display = index < 3 ? 'list-item' : 'none';
+    });
     
-    // Initialize cart UI
+    // Initialize Butterfly Pea - show only first 2 items
+    document.querySelectorAll('#butterflyPeaContent li').forEach((item, index) => {
+        item.style.display = index < 2 ? 'list-item' : 'none';
+    });
+    
+    // Initialize Dandelion - show only first 3 items
+    document.querySelectorAll('#dandelionContent li').forEach((item, index) => {
+        item.style.display = index < 3 ? 'list-item' : 'none';
+    });
+    
+    // Initialize Tigernut - show only first 3 items
+    document.querySelectorAll('#tigernutContent li').forEach((item, index) => {
+        item.style.display = index < 3 ? 'list-item' : 'none';
+    });
+
     updateCartUI();
     
-    // Setup "Read More" functionality for Sea Moss
     setupSeaMossReadMore();
 });
 
@@ -683,7 +686,7 @@ function setupSeaMossReadMore() {
     if (seaMossItems.length > 0 && readMoreBtn) {
         // Hide items beyond first 4
         seaMossItems.forEach((item, index) => {
-            if (index >= 4) {
+            if (index >= 3) {
                 item.style.display = 'none';
             }
         });
@@ -1238,7 +1241,7 @@ function processPayment() {
             closeCheckoutModal();
             
             // Send order confirmation
-            sendOrderConfirmationGHS(orderRef, response.reference, email, name, phone, address, amountInCedis);
+            // sendOrderConfirmationGHS(orderRef, response.reference, email, name, phone, address, amountInCedis);
         },
         onClose: function() {
             // User closed the payment window
@@ -1320,7 +1323,7 @@ function sendOrderConfirmationGHS(orderRef, paymentRef, email, name, phone, addr
     
     // OPTION 1: WhatsApp Notification (Recommended for Ghana)
     const whatsappMessage = encodeURIComponent(orderDetails);
-    const whatsappNumber = '233XXXXXXXXX'; // Replace with YOUR WhatsApp number
+    const whatsappNumber = '233 55 960 6139'; // Replace with YOUR WhatsApp number
     
     // Create WhatsApp link
     const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
@@ -1328,7 +1331,7 @@ function sendOrderConfirmationGHS(orderRef, paymentRef, email, name, phone, addr
     // OPTION 2: Email notification
     const subject = `🆕 New Order #${orderRef} - ₵${amountInCedis.toFixed(2)}`;
     const emailBody = orderDetails.replace(/\*/g, '').replace(/_/g, '');
-    const mailtoLink = `mailto:your-email@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+    const mailtoLink = `mailto:Stevecokelyjr@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
     
     // OPTION 3: SMS notification (using SMS API)
     // const smsMessage = `New order #${orderRef} from ${name}. Amount: ₵${amountInCedis.toFixed(2)}. Check email/WhatsApp for details.`;
@@ -1409,7 +1412,7 @@ function sendOrderConfirmation(orderRef, paymentRef, email, name, phone) {
     
     // OPTION 1: Send to WhatsApp (Easiest for Ghana)
     const whatsappMessage = encodeURIComponent(orderDetails);
-    const whatsappNumber = '233XXXXXXXXX'; // Replace with your WhatsApp number
+    const whatsappNumber = '233 55 960 6139';
     
     // Create a WhatsApp link (customer needs to click it)
     const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
@@ -1417,7 +1420,7 @@ function sendOrderConfirmation(orderRef, paymentRef, email, name, phone) {
     // OPTION 2: Send email using mailto link
     const subject = encodeURIComponent(`New Order: ${orderRef}`);
     const body = encodeURIComponent(orderDetails);
-    const mailtoLink = `mailto:your-email@gmail.com?subject=${subject}&body=${body}`;
+    const mailtoLink = `mailto:Stevecokelyjr@gmail.com?subject=${subject}&body=${body}`;
     
     // OPTION 3: Log to console (for testing)
     console.log('Order confirmed:', {
@@ -1463,7 +1466,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // ... rest of your initialization code
 });
 
-// Keep your existing "Read More" functions (they should still work)
 function toggleContent() {
     var moreContent = document.querySelectorAll('.more-content');
     var button = document.getElementById('toggleBtn');
