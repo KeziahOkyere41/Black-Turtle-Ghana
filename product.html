@@ -70,6 +70,7 @@
                             <a href="404.html" class="dropdown-item">404 Page</a>
                         </div> -->
                     </div>
+                    <a href="mailto:stevecokelyjr@gmail.com" class="nav-item nav-link">Contact</a> 
                     <a href="#" class="nav-item nav-link" onclick="openCartModal(); return false;">
                         <i class="fas fa-shopping-cart"></i>
                         <span id="cartCount" class="badge badge-danger" style="display: none;">0</span>
@@ -140,7 +141,7 @@
                             </div>
                         </div>
                         <div class="d-flex flex-column flex-sm-row gap-2 mt-2">
-                        <button class="btn btn-success flex-fill" onclick="addToCart('moringa')">
+                        <button class="btn btn-success flex-fill" onclick="addToCart('donation')">
                             <i class="fas fa-shopping-cart mr-2"></i>Add to Cart
                         </button>
                         <button class="btn btn-outline-success flex-fill" onclick="buyNow('moringa')">
@@ -554,6 +555,70 @@
                         </div><img src="img/bao.jpeg" alt="Generic placeholder image" width="200" class="ml-lg-5 order-1 order-lg-2">
                     </div> <!-- End -->
                 </li> <!-- End -->
+                <li class="list-group-item">
+                    <!-- Custom content-->
+                    <div class="media align-items-lg-center flex-column flex-lg-row p-3">
+    <div class="media-body order-2 order-lg-1">
+        <h5 class="mt-0 font-weight-bold mb-2">Black Think Tank Donation</h5>
+        <p class="font-italic text-muted mb-0 small">Support our community initiatives and black empowerment projects</p>
+        
+        <!-- Donation Amount Selection -->
+        <div class="donation-options mb-3">
+            <label class="form-label"><strong>Select Donation Amount:</strong></label>
+            <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons">
+                <label class="btn btn-outline-success m-1 donation-option" onclick="selectDonationAmount(100)">
+    <input type="radio" name="donationAmount"> $100
+            </label>
+            <label class="btn btn-outline-success m-1 donation-option" onclick="selectDonationAmount(250)">
+                <input type="radio" name="donationAmount"> $250
+            </label>
+            <label class="btn btn-outline-success m-1 donation-option" onclick="selectDonationAmount(400)">
+                <input type="radio" name="donationAmount"> $400
+            </label>
+            <label class="btn btn-outline-success m-1 donation-option" onclick="selectDonationAmount(1000)">
+                <input type="radio" name="donationAmount"> $1,000
+            </label>
+            <label class="btn btn-outline-success m-1 donation-option" onclick="selectDonationAmount(2000)">
+                <input type="radio" name="donationAmount"> $2,000
+            </label>
+            <label class="btn btn-outline-success m-1 donation-option" onclick="selectDonationAmount(5000)">
+                <input type="radio" name="donationAmount"> $5,000
+            </label>
+            <label class="btn btn-outline-success m-1 donation-option" onclick="selectDonationAmount(10000)">
+                <input type="radio" name="donationAmount"> $10,000
+            </label>
+            </div>
+            
+            <!-- Custom Amount -->
+            <div class="custom-amount mt-3">
+                <label class="form-label"><strong>Or Enter Custom Amount:</strong></label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    <input type="number" id="customDonation" class="form-control" placeholder="Enter amount" min="1" value="100">
+                </div>
+            </div>
+            
+            <!-- Selected Amount Display -->
+            <div class="selected-amount alert alert-success mt-3">
+                <h6 class="mb-0">Selected Donation: <span id="selectedDonationAmount" class="font-weight-bold">$100.00</span></h6>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="d-flex flex-column flex-sm-row gap-2 mt-2">
+            <!-- <button class="btn btn-success flex-fill" onclick="addDonationToCart()">
+        <i class="fas fa-shopping-cart mr-2"></i>Add to Cart
+    </button> -->
+    <button class="btn btn-outline-success flex-fill" onclick="processDonation()">
+        <i class="fas fa-bolt mr-2"></i>Donate Now
+    </button>
+        </div>
+    </div>
+    <img src="img/donation.jpeg" alt="Generic placeholder image" width="200" class="ml-lg-5 order-1 order-lg-2">
+</div>
+                </li> <!-- End -->
             </ul> <!-- End -->
         </div>
     </div>
@@ -627,9 +692,9 @@
                                         <span class="badge badge-dark">🌿 Mint</span>
                                     </div>
                                 </div>
-                                <p class="small text-muted mt-2">
-                                    💡 <em>The tea changes color from blue to purple with lemon! Perfect for photos!</em>
-                                </p>
+                                <!--<p class="small text-muted mt-2">-->
+                                <!--    💡 <em>The tea changes color from blue to purple with lemon! Perfect for photos!</em>-->
+                                <!--</p>-->
                             </div>
                         </div>
                     </div>
@@ -691,16 +756,18 @@
     <a href="#" class="btn btn-outline-primary border-2 btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 
 <script>
-// Product prices
 const productPrices = {
     'moringa': 19,
     'soursop': 17,
     'seaMoss': 24,
-    'butterfly': 18,
+    'butterfly': 12,
     'dandelion': 19,
     'tigernut': 19,
-    'baobab': 18
+    'baobab': 18,
+    'donation': 1 
 };
+
+let currentDonationAmount = 100;
 
 // Shipping rates configuration
 const shippingRates = {
@@ -777,7 +844,144 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCartUI();
     
     setupSeaMossReadMore();
+
+    initializeDonation();
 });
+
+function initializeDonation() {
+    console.log('Initializing donation system...');
+    
+    // Set up radio button listeners for donation
+    const donationRadios = document.querySelectorAll('input[name="donationAmount"]');
+    
+    donationRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            console.log('Donation radio changed:', this.value);
+            if (this.checked) {
+                currentDonationAmount = parseInt(this.value);
+                document.getElementById('customDonation').value = currentDonationAmount;
+                updateDonationDisplay();
+                
+                // Update active class on labels
+                document.querySelectorAll('.donation-option').forEach(label => {
+                    label.classList.remove('active');
+                });
+                this.closest('.donation-option').classList.add('active');
+            }
+        });
+    });
+
+    const customInput = document.getElementById('customDonation');
+    if (customInput) {
+        customInput.addEventListener('input', function() {
+            const value = parseInt(this.value) || 100;
+            console.log('Custom donation input:', value);
+            
+            if (value >= 1) {
+                currentDonationAmount = value;
+                updateDonationDisplay();
+                
+                // Uncheck all radio buttons
+                donationRadios.forEach(radio => {
+                    radio.checked = false;
+                });
+                
+                // Remove active class from all labels
+                document.querySelectorAll('.donation-option').forEach(label => {
+                    label.classList.remove('active');
+                });
+            }
+        });
+    }
+
+    const addDonationBtn = document.querySelector('button[onclick*="addDonationToCart"]');
+    const donateNowBtn = document.querySelector('button[onclick*="buyDonationNow"]');
+    
+    if (addDonationBtn) {
+        addDonationBtn.onclick = function() { addDonationToCart(); };
+    }
+    if (donateNowBtn) {
+        donateNowBtn.onclick = function() { buyDonationNow(); };
+    }
+    
+    // Initial donation display
+    updateDonationDisplay();
+}
+
+function updateDonationDisplay() {
+    const displayElement = document.getElementById('selectedDonationAmount');
+    if (displayElement) {
+        displayElement.textContent = '$' + currentDonationAmount.toFixed(2);
+        console.log('Donation display updated to:', currentDonationAmount);
+    }
+}
+
+function addDonationToCart() {
+    console.log('Adding donation to cart:', currentDonationAmount);
+    
+    if (currentDonationAmount < 1) {
+        alert('Please select a donation amount first');
+        return;
+    }
+
+const shipping = calculateShipping(1); // 1 item for donation
+    
+    // Add donation to your existing cart system
+    const existingItemIndex = cart.items.findIndex(item => item.id === 'donation');
+    
+    if (existingItemIndex > -1) {
+        // If donation already in cart, update the amount
+        cart.items[existingItemIndex].quantity = 1;
+        cart.items[existingItemIndex].total = currentDonationAmount;
+    } else {
+        // Add new donation item
+        cart.items.push({
+            id: 'donation',
+            name: 'Donation to Black Think Tank',
+            price: currentDonationAmount, // Use the selected amount as price
+            quantity: 1,
+            total: currentDonationAmount
+        });
+    }
+
+    updateCart();
+    
+    // Show confirmation
+    alert(`✅ Donation of $${currentDonationAmount} added to cart!\n\n` +
+          `This donation will support our community initiatives and black empowerment projects.\n\n` +
+          `Click the cart icon (🛒) in the top right to view your cart and checkout.`);
+    
+    // Update cart UI (your existing function)
+    updateCartUI();
+}
+
+function buyDonationNow() {
+    console.log('Processing donation now:', currentDonationAmount);
+    
+    if (currentDonationAmount < 1) {
+        alert('Please select a donation amount first');
+        return;
+    }
+    
+    // Clear cart and add only donation
+    cart.items = [{
+        id: 'donation',
+        name: 'Donation to Black Think Tank',
+        price: currentDonationAmount,
+        quantity: 1,
+        total: currentDonationAmount
+    }];
+    
+    // Update cart
+    updateCart();
+    updateCartUI();
+    
+    // Show checkout modal immediately (using your existing function)
+    openCheckoutModal();
+    
+    // Alert user
+    alert(`Processing donation of $${currentDonationAmount}...\n\nCheckout form is now open.`);
+}
 
 // Setup Sea Moss Read More
 function setupSeaMossReadMore() {
@@ -842,8 +1046,37 @@ function decreaseQuantity(productId) {
     }
 }
 
-// Add to Cart - SIMPLE VERSION (just shows alert)
 function addToCart(productId) {
+
+    if (productId === 'donation') {
+        // For donations, use the currentDonationAmount variable
+        const donationAmount = currentDonationAmount || 100; // Default to $100 if not set
+        
+        alert(`✅ Donation Added!\n\n` +
+              `Donation to Black Think Tank\n` +
+              `Amount: $${donationAmount.toFixed(2)}\n` +
+              `No shipping fees for donations.`);
+        
+        const existingItemIndex = cart.items.findIndex(item => item.id === 'donation');
+        
+        if (existingItemIndex > -1) {
+            // If donation already in cart, update the amount
+            cart.items[existingItemIndex].total = donationAmount;
+            cart.items[existingItemIndex].price = donationAmount;
+        } else {
+            // Add new donation item with NO shipping
+            cart.items.push({
+                id: 'donation',
+                name: 'Black Think Tank Donation',
+                price: donationAmount,
+                quantity: 1, // Always 1 for donations
+                total: donationAmount
+            });
+        }
+        
+        updateCart();
+        return; // Exit the function early
+    }
     const qty = parseInt(document.getElementById(productId + 'Qty').value);
     const price = productPrices[productId];
     const productName = getProductName(productId);
@@ -851,7 +1084,6 @@ function addToCart(productId) {
     const productTotal = qty * price;
     const totalWithShipping = productTotal + shipping.cost;
     
-    // Simple alert showing everything
     alert(`✅ Added to Cart!\n\n` +
           `Product: ${productName}\n` +
           `Quantity: ${qty}\n` +
@@ -860,7 +1092,6 @@ function addToCart(productId) {
           `Shipping: $${shipping.cost.toFixed(2)} (${shipping.method})\n` +
           `Total with Shipping: $${totalWithShipping.toFixed(2)}`);
     
-    // Add to cart object
     const existingItemIndex = cart.items.findIndex(item => item.id === productId);
     
     if (existingItemIndex > -1) {
@@ -879,7 +1110,6 @@ function addToCart(productId) {
     updateCart();
 }
 
-// Buy Now - SIMPLE VERSION
 function buyNow(productId) {
     const qty = parseInt(document.getElementById(productId + 'Qty').value);
     const price = productPrices[productId];
@@ -888,7 +1118,6 @@ function buyNow(productId) {
     const productTotal = qty * price;
     const totalWithShipping = productTotal + shipping.cost;
     
-    // Clear cart and add this item
     cart.items = [{
         id: productId,
         name: productName,
@@ -899,11 +1128,9 @@ function buyNow(productId) {
     
     updateCart();
     
-    // Show checkout modal
     openCheckoutModal();
 }
 
-// Get product name
 function getProductName(productId) {
     const productNames = {
         'moringa': 'Moringa Leaf Powder',
@@ -1030,7 +1257,7 @@ function updateCartModal() {
         <table class="table table-sm">
             <thead>
                 <tr>
-                    <th>Product</th>
+                    <th>Item</th>
                     <th>Price</th>
                     <th>Qty</th>
                     <th>Total</th>
@@ -1041,25 +1268,43 @@ function updateCartModal() {
         `;
         
         cart.items.forEach(item => {
-            cartItemsHTML += `
-            <tr>
-                <td>${item.name}</td>
-                <td>$${item.price.toFixed(2)}</td>
-                <td>
-                    <div class="input-group input-group-sm" style="width: 100px;">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" onclick="updateCartItemQty('${item.id}', -1)">-</button>
-                        <input type="text" class="form-control form-control-sm text-center" value="${item.quantity}" readonly>
-                        <button class="btn btn-outline-secondary btn-sm" type="button" onclick="updateCartItemQty('${item.id}', 1)">+</button>
-                    </div>
-                </td>
-                <td>$${item.total.toFixed(2)}</td>
-                <td>
-                    <button class="btn btn-link text-danger btn-sm" onclick="removeFromCart('${item.id}')">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-            `;
+            // Special handling for donation
+            if (item.id === 'donation') {
+                cartItemsHTML += `
+                <tr>
+                    <td>${item.name} (Custom Amount)</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td>1</td>
+                    <td>$${item.total.toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-link text-danger btn-sm" onclick="removeFromCart('${item.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                `;
+            } else {
+                // Regular product display (your existing code)
+                cartItemsHTML += `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td>
+                        <div class="input-group input-group-sm" style="width: 100px;">
+                            <button class="btn btn-outline-secondary btn-sm" type="button" onclick="updateCartItemQty('${item.id}', -1)">-</button>
+                            <input type="text" class="form-control form-control-sm text-center" value="${item.quantity}" readonly>
+                            <button class="btn btn-outline-secondary btn-sm" type="button" onclick="updateCartItemQty('${item.id}', 1)">+</button>
+                        </div>
+                    </td>
+                    <td>$${item.total.toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-link text-danger btn-sm" onclick="removeFromCart('${item.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }
         });
         
         cartItemsHTML += '</tbody></table>';
@@ -1071,6 +1316,17 @@ function updateCartModal() {
     document.getElementById('cartShipping').textContent = cart.shipping.toFixed(2);
     document.getElementById('cartGrandTotal').textContent = cart.grandTotal.toFixed(2);
     document.getElementById('shippingMethodDisplay').textContent = cart.shippingMethod;
+}
+
+// Add this to your existing updateCartItemQty function or create a new one for donations
+function updateDonationAmount(newAmount) {
+    const donationItemIndex = cart.items.findIndex(item => item.id === 'donation');
+    if (donationItemIndex > -1) {
+        cart.items[donationItemIndex].price = newAmount;
+        cart.items[donationItemIndex].total = newAmount;
+        updateCart();
+        updateCartModal();
+    }
 }
 
 // Update cart item quantity
@@ -1656,6 +1912,153 @@ document.getElementById('showInstructionsBtn').addEventListener('click', functio
     $('#instructionsModal').modal('show');
 });
 
+function selectDonationAmount(amount) {
+    // Update the donation amount
+    currentDonationAmount = amount;
+    
+    // Update the display
+    document.getElementById('selectedDonationAmount').textContent = '$' + amount.toFixed(2);
+    
+    // Update the custom input
+    document.getElementById('customDonation').value = amount;
+    
+    // Uncheck all radio buttons (optional, if you want them to show as checked)
+    document.querySelectorAll('input[name="donationAmount"]').forEach(radio => {
+        radio.checked = false;
+    });
+}
+
+// ============ DONATION CHECKOUT ============
+function processDonation() {
+    const donationAmount = currentDonationAmount || 100;
+    
+    // Simple email prompt (Paystack requires valid email)
+    const donorEmail = prompt("Enter your email for payment receipt:", "test@example.com");
+    
+    if (!donorEmail) {
+        alert("Email is required for payment.");
+        return;
+    }
+    
+    // Basic email validation
+    if (!donorEmail.includes('@') || !donorEmail.includes('.')) {
+        alert("Please enter a valid email (e.g., name@gmail.com)");
+        return;
+    }
+    
+    // Optional name
+    const donorName = prompt("Enter your name (optional):", "");
+    
+    // Use SIMPLE Paystack integration to avoid conflicts
+    const orderRef = 'DON-' + Date.now();
+    const exchangeRate = 12; // Update this
+    const amountInCedis = donationAmount * exchangeRate;
+    const amountInPesewas = Math.round(amountInCedis * 100);
+    
+    // IMPORTANT: Make sure you're in TEST mode and using TEST key
+    const paystackPublicKey = 'pk_test_45b1b519f071476629602b195460cc33b22f1c32';
+    
+    // ============ SIMPLE PAYSTACK PAYMENT ============
+    // This avoids modal conflicts
+    const paystackData = {
+        key: paystackPublicKey,
+        email: donorEmail,
+        amount: amountInPesewas,
+        currency: 'GHS',
+        ref: orderRef,
+        callback: function(response) {
+            alert(`✅ DONATION SUCCESSFUL!\n\nThank you for your donation of $${donationAmount}\nTransaction ID: ${response.reference}`);
+            console.log('Payment successful:', response);
+        },
+        onClose: function() {
+            alert('Donation cancelled.');
+        }
+    };
+    
+    // Add optional fields if name is provided
+    if (donorName) {
+        const nameParts = donorName.split(' ');
+        paystackData.firstname = nameParts[0] || '';
+        paystackData.lastname = nameParts.slice(1).join(' ') || '';
+    }
+    
+    // Check if Paystack is loaded
+    if (typeof PaystackPop === 'undefined') {
+        alert('Paystack not loaded. Please add:\n');
+        return;
+    }
+    
+    console.log('Starting Paystack with:', {
+        email: donorEmail,
+        amount: amountInPesewas,
+        key: paystackPublicKey.substring(0, 20) + '...'
+    });
+    
+    // Try payment with error handling
+    try {
+        const handler = PaystackPop.setup(paystackData);
+        handler.openIframe();
+    } catch (error) {
+        console.error('Paystack setup error:', error);
+        alert('Payment error: ' + error.message);
+    }
+}
+
+function sendThankYou(email, name, amount, reference) {
+    console.log('Donation received:', {
+        email: email,
+        name: name,
+        amount: amount,
+        reference: reference,
+        timestamp: new Date().toISOString()
+    });
+}
+
+// function addDonationToCart() {
+//     const donationAmount = currentDonationAmount || 100;
+    
+//     alert(`✅ Donation Added to Cart!\n\n` +
+//           `Amount: $${donationAmount}\n` +
+//           `Type: Black Think Tank Support\n\n` +
+//           `Note: No shipping fees for donations.`);
+    
+//     const existingItemIndex = cart.items.findIndex(item => item.id === 'donation');
+    
+//     if (existingItemIndex > -1) {
+//         cart.items[existingItemIndex].total = donationAmount;
+//         cart.items[existingItemIndex].price = donationAmount;
+//     } else {
+//         cart.items.push({
+//             id: 'donation',
+//             name: 'Black Think Tank Donation',
+//             price: donationAmount,
+//             quantity: 1,
+//             total: donationAmount
+//         });
+//     }
+    
+//     updateCart();
+// }
+
+// function updateCart() {
+//     const regularItems = cart.items.filter(item => item.id !== 'donation');
+//     const donationItems = cart.items.filter(item => item.id === 'donation');
+    
+//     cart.total = regularItems.reduce((sum, item) => sum + item.total, 0);
+    
+//     const totalQuantity = regularItems.reduce((sum, item) => sum + item.quantity, 0);
+    
+//     const shippingInfo = calculateShipping(totalQuantity);
+//     cart.shipping = shippingInfo.cost;
+//     cart.shippingMethod = shippingInfo.method;
+    
+//     const donationsTotal = donationItems.reduce((sum, item) => sum + item.total, 0);
+    
+//     // Grand total: regular items + shipping + donations (no shipping for donations)
+//     cart.grandTotal = cart.total + cart.shipping + donationsTotal;
+    
+//     updateCartUI();
+// }
 </script>
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

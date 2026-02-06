@@ -571,3 +571,27 @@ body{background: linear-gradient(to right, #1d0a0ac9, #031806);min-height: 100vh
     padding: 10px 15px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
+
+.donation-options .btn {
+    min-width: 80px;
+    border-radius: 5px !important;
+}
+
+.donation-options .btn.active {
+    background-color: #28a745 !important;
+    color: white !important;
+    border-color: #28a745 !important;
+}
+
+.donation-options .btn:hover:not(.active) {
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+.custom-amount .input-group {
+    max-width: 200px;
+}
+
+.selected-amount {
+    background-color: rgba(40, 167, 69, 0.1);
+    border-left: 4px solid #28a745;
+}
